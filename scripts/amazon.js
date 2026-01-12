@@ -36,7 +36,7 @@ products.forEach((product) => {
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart">
+          <div class="added-to-cart js-added-function-${product.id}">
             <img src="images/icons/checkmark.png">
             Added
           </div>
@@ -52,16 +52,29 @@ products.forEach((product) => {
 
 document.querySelector('.js-product-grid').innerHTML = productHtml;
 
-
+const addedMessageTimeouts = {};
 
 document.querySelectorAll('.js-add-to-cart')
   .forEach((button) => {
     button.addEventListener('click', () => {
-
-      const productId = button.dataset.productId;
+     
+      const { productId } = button.dataset; // used destruction method - what it does is -> 
+      // shortcut method, just write what you want inside {}, = to on what you want to set like 
+      // product variable or a button etc
+      const previousTimeoutId = addedMessageTimeouts[productId];
+      if (previousTimeoutId) {
+        clearTimeout(previousTimeoutId);
+      }
       const quantitySelector = document.querySelector(`.js-quantity-selector-${productId}`);
       const quantityToAdd = Number(quantitySelector.value);
-      
+       const addedMessage=document.querySelector(`.js-added-function-${productId}`);
+      addedMessage.classList.add('added-function-visible');
+      const timeoutId = setTimeout(() => {
+        const addedMessage = document.querySelector(`.js-added-function-${productId}`);
+        addedMessage.classList.remove('added-function-visible');
+      }, 2000);
+
+      addedMessageTimeouts[productId] = timeoutId;
       let matchingItem;
   
       cart.forEach((item) => {
@@ -77,7 +90,7 @@ document.querySelectorAll('.js-add-to-cart')
       } else {
 
         cart.push({
-          productId: productId,
+          /*productId:*/ productId, // it will still work, shorthand property, just remove duplicate ah name, write it once ez
           quantity: quantityToAdd
         });
       }
